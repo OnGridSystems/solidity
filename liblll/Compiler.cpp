@@ -33,7 +33,7 @@ bytes dev::lll::compileLLL(string const& _src, dev::solidity::EVMVersion _evmVer
 	try
 	{
 		CompilerState cs;
-		cs.populateStandard();
+		//cs.populateStandard();
 		auto assembly = CodeFragment::compile(_src, cs, _readFile).assembly(cs);
 		if (_opt)
 			assembly = assembly.optimise(true, _evmVersion);
@@ -103,6 +103,7 @@ std::string dev::lll::compileLLLToAsm(std::string const& _src, EVMVersion _evmVe
 	}
 	return string();
 }
+
 
 string dev::lll::parseLLL(string const& _src)
 {

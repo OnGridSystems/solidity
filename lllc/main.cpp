@@ -28,6 +28,7 @@
 #include <libdevcore/CommonData.h>
 #include <libevmasm/Instruction.h>
 #include <solidity/BuildInfo.h>
+#include <liblll/llvmCompiler.h>
 
 using namespace std;
 using namespace dev;
@@ -50,6 +51,7 @@ static void help()
 		<< "    -t,--parse-tree  Only parse; show parse tree." << endl
 		<< "    -o,--optimise  Turn on/off the optimiser; off by default." << endl
 		<< "    -d,--disassemble  Disassemble input into an opcode stream." << endl
+		<< "    -l,--llvm  Compile to LLVM IR." << endl
 		<< "    -h,--help  Show this help message and exit." << endl
 		<< "    -V,--version  Show the version and exit." << endl;
 	exit(0);
@@ -85,7 +87,7 @@ static void setDefaultOrCLocale()
 #endif
 }
 
-enum Mode { Binary, Hex, Assembly, ParseTree, Disassemble };
+enum Mode { Binary, Hex, Assembly, ParseTree, Disassemble, LLVM };
 
 int main(int argc, char** argv)
 {
@@ -111,6 +113,8 @@ int main(int argc, char** argv)
 			optimise = 1;
 		else if (arg == "-d" || arg == "--disassemble")
 			mode = Disassemble;
+        else if (arg == "-l" || arg == "--llvm")
+            mode = LLVM;
 		else if (arg == "-V" || arg == "--version")
 			version();
 		else
@@ -148,6 +152,10 @@ int main(int argc, char** argv)
 	{
 		cout << compileLLLToAsm(src, EVMVersion{}, optimise ? true : false, &errors, readFileAsString) << endl;
 	}
+	else if (mode == LLVM)
+    {
+	    cout << compileLLLToIR(src, &errors) << endl;
+    }
 
 	for (auto const& i: errors)
 		cerr << i << endl;

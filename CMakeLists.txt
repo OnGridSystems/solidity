@@ -23,6 +23,7 @@ include(EthDependencies)
 include(jsoncpp)
 include_directories(SYSTEM ${JSONCPP_INCLUDE_DIR})
 
+
 find_package(Threads)
 
 # Figure out what compiler and system are we using
@@ -30,6 +31,14 @@ include(EthCompilerSettings)
 
 # Include utils
 include(EthUtils)
+
+# Include LLVM
+find_package(LLVM REQUIRED CONFIG)
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+include_directories(${LLVM_INCLUDE_DIRS})
+add_definitions(${LLVM_DEFINITIONS})
+
 
 # Create license.h from LICENSE.txt and template
 # Converting to char array is required due to MSVC's string size limit.
@@ -42,7 +51,6 @@ configure_file("${CMAKE_SOURCE_DIR}/cmake/templates/license.h.in" include/licens
 
 include(EthOptions)
 configure_project(TESTS)
-
 add_subdirectory(libdevcore)
 add_subdirectory(libevmasm)
 add_subdirectory(libsolidity)

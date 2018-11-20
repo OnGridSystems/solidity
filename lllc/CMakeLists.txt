@@ -1,5 +1,6 @@
 add_executable(lllc main.cpp)
-target_link_libraries(lllc PRIVATE lll ${Boost_SYSTEM_LIBRARY})
+llvm_map_components_to_libnames(llvm_libs irreader)
+target_link_libraries(lllc PRIVATE lll ${Boost_SYSTEM_LIBRARY} ${llvm_libs})
 
 if (INSTALL_LLLC)
 	include(GNUInstallDirs)
