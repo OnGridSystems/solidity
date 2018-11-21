@@ -22,30 +22,50 @@ using namespace llvm;
 
 
 Value *parseTree(sp::utree const& _t,IRBuilder<> *builder){
-    std::vector<int> operands;
+    std::vector<Value*> arguments;
     string operation;
     int c = 0;
 
     for (auto const& i: _t) {
-
         if(c++){
-            bigint bigintVal = *i.get<bigint*>();
-            int intVal = bigintVal.template convert_to<int>();
-            operands.push_back(intVal);
+            switch (i.which()) {
+                case sp::utree_type::any_type: {
+                    bigint bigintVal = *i.get<bigint*>();
+                    int intVal = bigintVal.template convert_to<int>();
+                    arguments.push_back(builder->getInt32(intVal));
+                    break;
+                }
+                case sp::utree_type::list_type: {
+                    arguments.push_back(parseTree(i, builder));
+                }
+
+            }
         }
         else {
-            auto sr = i.get<sp::basic_string<boost::iterator_range<char const*>, sp::utree_type::symbol_type>>();
-            operation = string(sr.begin(), sr.end());
+            switch (i.which()){
+                case sp::utree_type::symbol_type: {
+                    auto sr = i.get<sp::basic_string<boost::iterator_range<char const*>, sp::utree_type::symbol_type>>();
+                    operation = string(sr.begin(), sr.end());
+                    break;
+                }
+                case sp::utree_type::string_type: {
+                    auto sr = i.get<sp::basic_string<boost::iterator_range<char const*>, sp::utree_type::string_type>>();
+                    operation = string(sr.begin(), sr.end());
+                    break;
+                }
+            }
         }
+    }
 
+    if (operation == "+") {
+        return builder->CreateAdd(arguments[0], arguments[1], "return");
+    }
+    else if (operation == "-") {
+        return builder->CreateSub(arguments[0], arguments[1], "return");
     }
 
 
-
-    Value *Two = builder->getInt32(operands[0]);
-    Value *Three = builder->getInt32(operands[1]);
-
-    return builder->CreateAdd(Two, Three, "return");
+    return builder->CreateAdd(arguments[0], arguments[1], "return");
 }
 
 
