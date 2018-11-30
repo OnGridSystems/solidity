@@ -63,6 +63,12 @@ Value *parseTree(sp::utree const& _t,IRBuilder<> *builder){
     else if (operation == "-") {
         return builder->CreateSub(arguments[0], arguments[1], "return");
     }
+    else if (operation == "*") {
+        return builder->CreateMul(arguments[0], arguments[1], "return");
+    }
+    else if (operation == "/") {
+        return builder->CreateUDiv(arguments[0], arguments[1], "return");
+    }
 
 
     return builder->CreateAdd(arguments[0], arguments[1], "return");
